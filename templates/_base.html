@@ -1,0 +1,55 @@
+{% load compress %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+
+    {% block head %}{% endblock head %}
+
+    <!-- CSS -->
+    {% compress css %}{% block extra_css %}{% endblock extra_css %}{% endcompress %}
+    <!-- CSS End -->
+
+    <!-- JavaScript -->
+    {% compress js %}
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    {% block extra_js %}{% endblock extra_js %}
+    {% endcompress %}
+    <!-- JavaScript End -->
+
+</head>
+
+<body>
+    <div x-data="{ sidebarIsOpen: false }" class="relative flex w-full flex-col md:flex-row">
+        <!-- This allows screen readers to skip the sidebar and go directly to the main content. -->
+        <a class="sr-only" href="#main-content">skip to the main content</a>
+
+        <!-- dark overlay for when the sidebar is open on smaller screens  -->
+        <div x-cloak x-show="sidebarIsOpen" class="fixed inset-0 z-20 bg-neutral-950/10 backdrop-blur-sm md:hidden"
+            aria-hidden="true" x-on:click="sidebarIsOpen = false" x-transition.opacity></div>
+
+        {% include 'includes/sidebar.html' %}
+
+        <!-- top navbar & main content  -->
+        <div class="h-svh w-full overflow-y-auto bg-white dark:bg-neutral-950">
+            <!-- top navbar  -->
+            {% include 'includes/navbar.html' %}
+            <!-- main content  -->
+            <div id="main-content" class="p-4">
+                <div class="overflow-y-auto">
+                    {% block content %}{% endblock content %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_scripts %}{% endblock extra_scripts %}
+
+</body>
+
+</html>
