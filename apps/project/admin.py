@@ -44,7 +44,7 @@ class IssueAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "project",
-        "_type",
+        "type",
         "status",
         "priority",
         "assignee",
@@ -52,7 +52,7 @@ class IssueAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    list_filter = ("_type", "status", "priority", "project", "assignee")
+    list_filter = ("type", "status", "priority", "project", "assignee")
     search_fields = ("title", "description")
     ordering = ("-created_at",)
 

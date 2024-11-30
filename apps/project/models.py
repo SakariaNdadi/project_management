@@ -64,9 +64,9 @@ class Status(models.TextChoices):
 
 
 class Roles(models.TextChoices):
-    GUEST = "guest", "Guest"
-    MEMBER = "member", "Member"
-    REVIEWER = "reviewer", "Reviewer"
+    GUEST = "GUEST", "Guest"
+    MEMBER = "MEMBER", "Member"
+    REVIEWER = "REVIEWER", "Reviewer"
 
 
 class Project(models.Model):
@@ -135,12 +135,11 @@ class Issue(models.Model):
     description = models.TextField(
         blank=True, null=True, help_text="Detailed description of the issue"
     )
-    _type = models.CharField(
+    type = models.CharField(
         max_length=20,
         choices=IssueType.choices,
         default=IssueType.TASK,
         help_text="Type of the issue (e.g., Bug, Task, Feature)",
-        verbose_name="type",
     )
     status = models.CharField(
         max_length=20,

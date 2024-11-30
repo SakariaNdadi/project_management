@@ -16,4 +16,9 @@ urlpatterns: list = [
         views.project_epics_list,
         name="project_epics_list",
     ),
+    path(
+        "issues/<int:project_id>/",
+        views.project_issues_list,
+        name="project_issues_list",
+    ),
 ]

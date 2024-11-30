@@ -167,3 +167,13 @@ def project_epics_list(request, project_id) -> HttpResponse:
     epics = Epic.objects.filter(project=project)
     context = {"epics": epics}
     return render(request, "project/epic_list.html", context)
+
+
+def project_issues_list(request, project_id) -> HttpResponse:
+    user = request.user
+    project = get_object_or_404(
+        Project, Q(pk=project_id) & (Q(lead=user) | Q(members=user))
+    )
+    issues = Issue.objects.filter(project=project)
+    context = {"issues": issues}
+    return render(request, "project/issue_list.html", context)
