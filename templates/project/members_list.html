@@ -1,0 +1,58 @@
+{% extends '_base.html' %}
+{% block title %}{{ project.name }}{% endblock title %}
+{% block head %}{% endblock head %}
+{% block extra_css %}{% endblock extra_css %}
+{% block extra_js %}{% endblock extra_js %}
+{% block content %}
+
+
+<form method="post" class="grid grid-cols-3 gap-2 pb-2">
+    {% csrf_token %}
+    <div class="col-span-2">
+        <c-input placeholder="@email" />
+    </div>
+    <span class="px-0.5">
+        <c-button type="submit" label="Invite" primary />
+    </span>
+</form>
+
+
+<div class="overflow-hidden w-full overflow-x-auto rounded-md border border-neutral-300 dark:border-neutral-700">
+    <table class="w-full text-left text-sm text-neutral-600 dark:text-neutral-300">
+        <thead
+            class="border-b border-neutral-300 bg-neutral-50 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white">
+            <tr>
+                <th scope="col" class="p-4">Name</th>
+                <th scope="col" class="p-4">Email</th>
+                <th scope="col" class="p-4">Role</th>
+                {% if user == project.lead %}
+                <th scope="col" class="p-4">Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-300 dark:divide-neutral-700">
+            <tr>
+                <td class="p-4">{{ project.lead }}</td>
+                <td class="p-4">{{ project.lead.email }}</td>
+                <td class="p-4">lead</td>
+            </tr>
+            {% for member in project.projectmember_set.all %}
+            <tr>
+                <td class="p-4">{{ member.user }}</td>
+                <td class="p-4">{{ member.user.email }}</td>
+                <td class="p-4"><span
+                        class="inline-flex overflow-hidden rounded-md border px-1 py-0.5 text-xs font-medium {% if member.role == 'member' %} border-green-500 text-green-500 bg-green-500/10 {% elif member.role == 'reviewer' %} border-blue-500 text-blue-500 bg-blue-500/10 {% else %} border-red-500 text-red-500 bg-red-500/10 {% endif %}">{% if member.role == 'member' %}Member{% elif member.role == 'reviewer' %}Reviewer{% else %}Guest{% endif %}</span>
+                </td>
+                {% if user == project.lead %}
+                <td class="p-4"><button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md bg-transparent p-0.5 font-semibold text-black outline-black hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:opacity-100 active:outline-offset-0 dark:text-white dark:outline-white">Edit</button>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
+{% block extra_scripts %}{% endblock extra_scripts %}

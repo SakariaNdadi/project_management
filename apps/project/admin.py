@@ -7,7 +7,16 @@ from .models import (
     Epic,
     UserStory,
     AcceptanceCriteria,
+    ProjectMember,
 )
+
+
+class ProjectMemberInline(admin.TabularInline):
+    model = ProjectMember
+    extra = 1  # Number of empty forms to display
+    fields = ("user", "role", "is_active", "date_joined")  # Customize fields shown
+    readonly_fields = ("date_joined",)  # Make date_joined read-only
+    autocomplete_fields = ("user",)  # Enable autocomplete for User if applicable
 
 
 # Register Project model
@@ -26,6 +35,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ("methodology", "category", "is_active", "created_by")
     search_fields = ("name", "description")
     ordering = ("-created_at",)
+    inlines = [ProjectMemberInline]
 
 
 # Register Issue model

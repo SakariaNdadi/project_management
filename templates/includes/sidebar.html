@@ -1,4 +1,5 @@
 {% load project_filters %}
+
 <aside x-cloak
     class="fixed left-0 z-20 flex h-svh w-60 shrink-0 flex-col border-r border-neutral-300 bg-neutral-50 p-4 transition-transform duration-300 md:w-64 md:translate-x-0 md:relative dark:border-neutral-700 dark:bg-neutral-900"
     x-bind:class="showSidebar ? 'translate-x-0' : '-translate-x-60'" aria-label="sidebar navigation">
@@ -49,8 +50,49 @@
             </c-slot>
         </c-includes.sidebar.link>
 
+        <c-includes.sidebar.link name="Projects" url="{% url 'project_list' %}">
+            <c-slot name="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
+                    aria-hidden="true">
+                    <path
+                        d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z" />
+                </svg>
+            </c-slot>
+
+            <c-slot name="inline">
+                <span class="text-neutral-400">{{ user|total_projects }}</span>
+            </c-slot>
+
+        </c-includes.sidebar.link>
+
+
+
+
+        <c-includes.sidebar.link name="Settings" url="#">
+            <c-slot name="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
+                    aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M7.84 1.804A1 1 0 0 1 8.82 1h2.36a1 1 0 0 1 .98.804l.331 1.652a6.993 6.993 0 0 1 1.929 1.115l1.598-.54a1 1 0 0 1 1.186.447l1.18 2.044a1 1 0 0 1-.205 1.251l-1.267 1.113a7.047 7.047 0 0 1 0 2.228l1.267 1.113a1 1 0 0 1 .206 1.25l-1.18 2.045a1 1 0 0 1-1.187.447l-1.598-.54a6.993 6.993 0 0 1-1.929 1.115l-.33 1.652a1 1 0 0 1-.98.804H8.82a1 1 0 0 1-.98-.804l-.331-1.652a6.993 6.993 0 0 1-1.929-1.115l-1.598.54a1 1 0 0 1-1.186-.447l-1.18-2.044a1 1 0 0 1 .205-1.251l1.267-1.114a7.05 7.05 0 0 1 0-2.227L1.821 7.773a1 1 0 0 1-.206-1.25l1.18-2.045a1 1 0 0 1 1.187-.447l1.598.54A6.992 6.992 0 0 1 7.51 3.456l.33-1.652ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                        clip-rule="evenodd" />
+                </svg>
+            </c-slot>
+        </c-includes.sidebar.link>
+
+        <!-- Projects -->
+
+        <div class="inline-flex items-center justify-center w-full">
+            <hr class="w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+            <span
+                class="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-neutral-50 left-1/2 dark:text-white dark:bg-gray-900"><a
+                    href="{% url 'project_list' %}">Projects</a></span> <span><a
+                    href="{% url 'project_create' %}">+</a></span>
+        </div>
+
+
         <!-- collapsible item  -->
-        <c-includes.sidebar.dropdown id="projects" name="Projects">
+        {% for project in user_projects %}
+        <c-includes.sidebar.dropdown id="projects" name="{{ project }}">
             <c-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
                     aria-hidden="true">
@@ -64,22 +106,19 @@
             </c-slot>
 
 
-            {% for project in user_projects %}
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="{% url 'project_detail' project.pk %}"
-                name="{{ project }}" />
-            {% endfor %}
+
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="{{ project.get_absolute_url }}"
+                name="General" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="{% url 'project_members_list' project.pk %}"
+                name="Members" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="{% url 'project_epics_list' project.pk %}"
+                name="Epics" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="" name="User Stories" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="" name="Issues" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="" name="Sprints" />
+
 
         </c-includes.sidebar.dropdown>
-
-        <c-includes.sidebar.link name="Settings" url="#">
-            <c-slot name="icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
-                    aria-hidden="true">
-                    <path fill-rule="evenodd"
-                        d="M7.84 1.804A1 1 0 0 1 8.82 1h2.36a1 1 0 0 1 .98.804l.331 1.652a6.993 6.993 0 0 1 1.929 1.115l1.598-.54a1 1 0 0 1 1.186.447l1.18 2.044a1 1 0 0 1-.205 1.251l-1.267 1.113a7.047 7.047 0 0 1 0 2.228l1.267 1.113a1 1 0 0 1 .206 1.25l-1.18 2.045a1 1 0 0 1-1.187.447l-1.598-.54a6.993 6.993 0 0 1-1.929 1.115l-.33 1.652a1 1 0 0 1-.98.804H8.82a1 1 0 0 1-.98-.804l-.331-1.652a6.993 6.993 0 0 1-1.929-1.115l-1.598.54a1 1 0 0 1-1.186-.447l-1.18-2.044a1 1 0 0 1 .205-1.251l1.267-1.114a7.05 7.05 0 0 1 0-2.227L1.821 7.773a1 1 0 0 1-.206-1.25l1.18-2.045a1 1 0 0 1 1.187-.447l1.598.54A6.992 6.992 0 0 1 7.51 3.456l.33-1.652ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                        clip-rule="evenodd" />
-                </svg>
-            </c-slot>
-        </c-includes.sidebar.link>
+        {% endfor %}
     </div>
 </aside>

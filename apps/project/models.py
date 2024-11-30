@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+from django.core.exceptions import ValidationError
+
 User = get_user_model()
 
 
@@ -28,10 +30,10 @@ class ProjectType(models.TextChoices):
 
 
 class Priority(models.TextChoices):
-    LOW = "LOW", "Low"
-    MEDIUM = "MEDIUM", "Medium"
-    HIGH = "HIGH", "High"
-    CRITICAL = "CRITICAL", "Critical"
+    LOW = "low", "Low"
+    MEDIUM = "medium", "Medium"
+    HIGH = "high", "High"
+    CRITICAL = "critical", "Critical"
 
 
 class Categories(models.TextChoices):
@@ -61,6 +63,12 @@ class Status(models.TextChoices):
     BLOCKED = "BLOCKED", "Blocked"
 
 
+class Roles(models.TextChoices):
+    GUEST = "guest", "Guest"
+    MEMBER = "member", "Member"
+    REVIEWER = "reviewer", "Reviewer"
+
+
 class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
     methodology = models.CharField(max_length=3, choices=ProjectType.choices)
@@ -76,7 +84,9 @@ class Project(models.Model):
         on_delete=models.SET_NULL,
         help_text="The lead user managing the project",
     )
-    members = models.ManyToManyField(User, related_name="project_member", blank=True)
+    members = models.ManyToManyField(
+        User, related_name="project_member", through="ProjectMember"
+    )
     category = models.CharField(max_length=20, choices=Categories.choices)
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(
@@ -90,6 +100,25 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse("project_detail", args=[self.pk])
+
+    # def clean(self) -> None:
+    #     if self.lead and self.members.filter(id=self.lead.id).exists():
+    #         raise ValidationError("The lead cannot also be a member of the project.")
+
+    # def save(self, *args, **kwargs) -> None:
+    #     self.clean()
+    #     super().save(*args, **kwargs)
+
+
+class ProjectMember(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.MEMBER)
+    is_active = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("project", "user", "role")
 
 
 class Issue(models.Model):

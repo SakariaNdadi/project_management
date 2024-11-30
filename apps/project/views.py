@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import (
     HttpResponse,
@@ -17,12 +18,15 @@ from .forms import (
 
 # Project Views
 def project_list(request) -> HttpResponse:
-    projects = Project.objects.all()
-    return render(request, "project/list.html", {"projects": projects})
+    user = request.user
+    # projects = Project.objects.all()
+    projects = Project.objects.filter(Q(lead=user) | Q(members=user)).distinct()
+    return render(request, "project/list.html")
 
 
 def project_detail(request, pk) -> HttpResponse:
-    project = get_object_or_404(Project, pk=pk)
+    user = request.user
+    project = get_object_or_404(Project, Q(pk=pk) & (Q(lead=user) | Q(members=user)))
     return render(request, "project/detail.html", {"project": project})
 
 
@@ -144,3 +148,22 @@ def acceptance_criteria_create(request, user_story_pk):
         "project/acceptance_criteria/create.html",
         {"form": form, "user_story": user_story},
     )
+
+
+def project_members_list(request, project_id) -> HttpResponse:
+    user = request.user
+    project = get_object_or_404(
+        Project, Q(pk=project_id) & (Q(lead=user) | Q(members=user))
+    )
+    context = {"project": project}
+    return render(request, "project/members_list.html", context)
+
+
+def project_epics_list(request, project_id) -> HttpResponse:
+    user = request.user
+    project = get_object_or_404(
+        Project, Q(pk=project_id) & (Q(lead=user) | Q(members=user))
+    )
+    epics = Epic.objects.filter(project=project)
+    context = {"epics": epics}
+    return render(request, "project/epic_list.html", context)
