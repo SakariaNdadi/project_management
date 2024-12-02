@@ -4,8 +4,17 @@ from django.http import (
     HttpResponse,
 )
 from django.urls import reverse_lazy
-
-from .models import Project, Issue, Sprint, Epic, UserStory, AcceptanceCriteria
+from django.views.generic import UpdateView
+from .models import (
+    Project,
+    Issue,
+    Sprint,
+    Epic,
+    UserStory,
+    AcceptanceCriteria,
+    Categories,
+    ProjectType,
+)
 from .forms import (
     ProjectForm,
     IssueForm,
@@ -24,10 +33,70 @@ def project_list(request) -> HttpResponse:
     return render(request, "project/list.html")
 
 
+import json
+
+
 def project_detail(request, pk) -> HttpResponse:
     user = request.user
+    categories = Categories.choices
+    project_types = ProjectType.choices
     project = get_object_or_404(Project, Q(pk=pk) & (Q(lead=user) | Q(members=user)))
-    return render(request, "project/detail.html", {"project": project})
+
+    if request.method == "POST":
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect("project_list")
+            # return redirect("project_detail", pk=project.pk)
+    else:
+        form = ProjectForm(instance=project)
+
+    return render(
+        request,
+        "project/detail.html",
+        {
+            "form": form,
+            "project": project,
+            "categories": categories,
+            "project_types": project_types,
+        },
+    )
+
+
+class ProjectUpdateView(UpdateView):
+    model = Project
+    # form_class = ProjectForm
+    fields = (
+        "name",
+        "type",
+        "description",
+        "start_date",
+        "end_date",
+        "lead",
+        "members",
+        "category",
+        "is_active",
+    )
+    template_name = "project/detail.html"
+    success_url = reverse_lazy("project_list")
+
+    # def get_success_url(self):
+    #     return reverse_lazy("project_detail", kwargs={"pk": self.object.pk})
+
+    def get_object(self, queryset=None):
+        user = self.request.user
+        project = get_object_or_404(Project, Q(lead=user) | Q(members=user))
+        return project
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "categories": Categories.choices,
+                "project_types": ProjectType.choices,
+            }
+        )
+        return context
 
 
 def project_create(

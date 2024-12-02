@@ -24,7 +24,7 @@ class ProjectMemberInline(admin.TabularInline):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         "name",
-        "methodology",
+        "type",
         "category",
         "start_date",
         "end_date",
@@ -32,7 +32,7 @@ class ProjectAdmin(admin.ModelAdmin):
         "created_by",
     )
     form = ProjectForm
-    list_filter = ("methodology", "category", "is_active", "created_by")
+    list_filter = ("type", "category", "is_active", "created_by")
     search_fields = ("name", "description")
     ordering = ("-created_at",)
     inlines = [ProjectMemberInline]

@@ -113,7 +113,8 @@
             <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="{% url 'project_epics_list' project.pk %}"
                 name="Epics" />
             <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="" name="User Stories" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="" name="Issues" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="{% url 'project_issues_list' project.pk %}"
+                name="Issues" />
             <c-includes.sidebar.dropdown.link id="{{ project.pk }}" url="" name="Sprints" />
 
 

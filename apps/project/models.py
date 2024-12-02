@@ -71,7 +71,7 @@ class Roles(models.TextChoices):
 
 class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    methodology = models.CharField(max_length=3, choices=ProjectType.choices)
+    type = models.CharField(max_length=3, choices=ProjectType.choices)
     description = models.TextField(
         blank=True, null=True, help_text="Project Description"
     )

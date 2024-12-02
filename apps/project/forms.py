@@ -5,7 +5,17 @@ from .models import Project, Issue, Sprint, Epic, UserStory, AcceptanceCriteria
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = "__all__"
+        fields = (
+            "name",
+            "type",
+            "description",
+            "start_date",
+            "end_date",
+            "lead",
+            "members",
+            "category",
+            "is_active",
+        )
         # exclude = ("created_by",)
 
 

@@ -5,5 +5,251 @@
 {% block extra_js %}{% endblock extra_js %}
 {% block content %}
 
+{% if project.lead == user %}
+<div x-data="{
+disabled: true,
+}">
+    <section class="bg-white dark:bg-gray-900" @dblclick="disabled = !disabled">
+        <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+            <form method="post">
+                {% csrf_token %}
+                <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                    <div class="sm:col-span-2">
+                        <label for="lead"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
+                        <input type="text" name="name" id="name" value="{{ project }}" :readonly="disabled"
+                            :class="{'border-8':!disabled}"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label for="description"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                        <textarea id="description" name="description" rows="8" :readonly="disabled"
+                            :class="{'border-8':!disabled}"
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                            value="{{ project.description }}">{{ project.description }}</textarea>
+                    </div>
+                    <div class="w-full">
+                        <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project
+                            Lead</label>
+                        <input type="text" name="lead" id="lead" value="{{ project.lead }}" :readonly="disabled"
+                            :class="{'border-8':!disabled}"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                            placeholder="{{ project.lead }}">
+                    </div>
+
+                    <div class="w-full">
+                        <label for="type"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+
+                        <template x-if="disabled">
+                            <input type="text" id="type" value="{{ project.get_type_display }}" :readonly="disabled"
+                                :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                                placeholder="{{ project.get_type_display }}">
+                        </template>
+
+                        <template x-if="disabled == false">
+                            <select name="type" id="type" :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                {% for value, label in project_types %}
+                                <option value="{{ value }}" {% if value == project.type %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </template>
+                    </div>
+
+                    <div class="w-full">
+                        <label for="start_date"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+                            Date</label>
+
+                        <template x-if="disabled">
+                            <input type="text" id="start_date" value="{{ project.start_date }}" :readonly="disabled"
+                                :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        </template>
+
+                        <template x-if="disabled == false">
+                            <input type="datetime-local" name="start_date" id="start_date"
+                                value="{{ project.start_date|date:'Y-m-d\TH:i' }}" :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        </template>
+                    </div>
+
+                    <div class="w-full">
+                        <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+                            Date</label>
+
+                        <template x-if="disabled">
+                            <input type="text" id="end_date" value="{{ project.end_date }}" :readonly="disabled"
+                                :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        </template>
+
+                        <template x-if="disabled == false">
+                            <input type="datetime-local" name="end_date" id="end_date"
+                                value="{{ project.end_date|date:'Y-m-d\TH:i' }}" :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        </template>
+                    </div>
+
+                    <div>
+                        <label for="category"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+
+                        <template x-if="disabled">
+                            <input type="text" id="category" value="{{ project.get_category_display }}"
+                                :readonly="disabled" :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        </template>
+
+                        <template x-if="disabled == false">
+                            <select name="category" id="category" :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                {% for value, label in categories %}
+                                <option value="{{ value }}" {% if value == project.category %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </template>
+                    </div>
+
+
+                    {#
+                    <div>
+                        <template x-if="disabled">
+                            <label for="is_active"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Is
+                                Active</label>
+
+                            <input type="text" id="is_active" value="{{ project.is_active }}" :readonly="disabled"
+                                :class="{'border-8':!disabled}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        </template>
+
+                        
+                        <template x-if="disabled == false">
+                            <label for="toggleWithContainer"
+                                class="inline-flex min-w-[14rem] cursor-pointer items-center justify-between gap-3 rounded-md border border-neutral-300 bg-neutral-50 px-4 py-1.5 dark:border-neutral-700 dark:bg-neutral-900">
+                                <input id="toggleWithContainer" type="checkbox" class="peer sr-only" role="switch"
+                                    checked />
+                                <span
+                                    class="trancking-wide text-sm font-medium text-neutral-600 peer-checked:text-neutral-900 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 dark:text-neutral-300 dark:peer-checked:text-white">Toggle</span>
+                                <div class="relative h-6 w-11 after:h-5 after:w-5 peer-checked:after:translate-x-5 rounded-full border border-neutral-300 bg-white after:absolute after:bottom-0 after:left-[0.0625rem] after:top-0 after:my-auto after:rounded-full after:bg-neutral-600 after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:bg-neutral-100 peer-focus:outline peer-focus:outline-2 peer-focus:outline-offset-2 peer-focus:outline-neutral-800 peer-focus:peer-checked:outline-black peer-active:outline-offset-0 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 dark:border-neutral-700 dark:bg-neutral-950 dark:after:bg-neutral-300 dark:peer-checked:bg-white dark:peer-checked:after:bg-black dark:peer-focus:outline-neutral-300 dark:peer-focus:peer-checked:outline-white"
+                                    aria-hidden="true"></div>
+                            </label>
+                        </template>
+                        
+                    </div>
+                    #}
+                </div>
+                <br>
+                <template x-if="disabled == false" class="mt-4 sm:mt-6">
+                    <c-button label="Update Project" type="submit" primary />
+                </template>
+            </form>
+        </div>
+    </section>
+</div>
+{% else %}
+<section class="bg-white dark:bg-gray-900">
+    <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+        <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+            <div class="sm:col-span-2">
+                <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
+                <input type="text" name="name" id="name" value="{{ project }}" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                    placeholder="{{ project }}">
+            </div>
+
+            <div class="sm:col-span-2">
+                <label for="description"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                <textarea id="description" rows="8" disabled
+                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                    placeholder="{{ project.description }}">{{ project.description }}</textarea>
+            </div>
+
+            <div class="w-full">
+                <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project
+                    Lead</label>
+                <input type="text" name="lead" id="lead" value="{{ project.lead }}" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                    placeholder="{{ project.lead }}">
+            </div>
+
+            <div class="w-full">
+                <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+
+                <input type="text" id="type" value="{{ project.get_type_display }}" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                    placeholder="{{ project.get_type_display }}">
+            </div>
+
+            <div class="w-full">
+                <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+                    Date</label>
+
+                <input type="text" id="start_date" value="{{ project.start_date }}" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+
+            </div>
+
+            <div class="w-full">
+                <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+                    Date</label>
+
+                <input type="text" id="end_date" value="{{ project.end_date }}" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+
+            </div>
+
+            <div>
+                <label for="category"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+
+                <input type="text" id="category" value="{{ project.get_category_display }}" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+            </div>
+
+            <div>
+                <label for="item-weight" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item
+                    Weight (kg)</label>
+                <input type="text" name="item-weight" id="item-weight" disabled
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                    placeholder="12">
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
 {% endblock content %}
-{% block extra_scripts %}{% endblock extra_scripts %}
+{% block extra_scripts %}
+
+<script>
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+        // Prevent the form from submitting
+        event.preventDefault();
+
+        // Create a FormData object from the form
+        const formData = new FormData(event.target);
+
+        // Convert FormData to an object
+        const submittedValues = {};
+        formData.forEach((value, key) => {
+            submittedValues[key] = value;
+        });
+
+        // Log the captured values
+        console.log("Captured values:", submittedValues);
+
+        // Optional: Perform further actions (e.g., validation, AJAX submission)
+    });
+</script>
+
+
+{% endblock extra_scripts %}
