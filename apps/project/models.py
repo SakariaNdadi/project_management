@@ -101,13 +101,11 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse("project_detail", args=[self.pk])
 
-    # def clean(self) -> None:
-    #     if self.lead and self.members.filter(id=self.lead.id).exists():
-    #         raise ValidationError("The lead cannot also be a member of the project.")
-
     # def save(self, *args, **kwargs) -> None:
     #     self.clean()
-    #     super().save(*args, **kwargs)
+    #     self.lead = self.request.user
+    #     self.created_by = self.request.user
+    #     return super().save(*args, **kwargs)
 
 
 class ProjectMember(models.Model):

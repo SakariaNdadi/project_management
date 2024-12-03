@@ -11,12 +11,9 @@ class ProjectForm(forms.ModelForm):
             "description",
             "start_date",
             "end_date",
-            "lead",
-            "members",
             "category",
             "is_active",
         )
-        # exclude = ("created_by",)
 
 
 class IssueForm(forms.ModelForm):

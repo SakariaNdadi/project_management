@@ -4,7 +4,7 @@ from django.http import (
     HttpResponse,
 )
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView
+from django.views.generic import CreateView, UpdateView
 from .models import (
     Project,
     Issue,
@@ -23,6 +23,7 @@ from .forms import (
     UserStoryForm,
     AcceptanceCriteriaForm,
 )
+from django.contrib.auth import get_user_model
 
 
 # Project Views
@@ -110,6 +111,38 @@ def project_create(
     else:
         form = ProjectForm()
     return render(request, "project/create.html", {"form": form})
+
+
+class ProjectCreateView(CreateView):
+    model = Project
+    # form_class = ProjectForm
+    fields = (
+        "name",
+        "type",
+        "description",
+        "start_date",
+        "end_date",
+        "category",
+        "is_active",
+    )
+    template_name = "project/create.html"
+    success_url = reverse_lazy("project_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "categories": Categories.choices,
+                "project_types": ProjectType.choices,
+                "users": get_user_model().objects.all(),
+            }
+        )
+        return context
+
+    def form_valid(self, form) -> HttpResponse:
+        form.instance.lead = self.request.user
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 
 def project_update(request, pk) -> HttpResponse:

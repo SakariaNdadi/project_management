@@ -1,18 +1,18 @@
 <c-vars label />
 {% if url %}
-<a class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-400{% endif %}{% if secondary %}sky-800{% endif %} px-6 py-3 focus:outline-none"
+<a class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} px-6 py-3 focus:outline-none"
     href="{{ url }}" {{ attrs }}>
     {% else %}
     <button
-        class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-400{% endif %}{% if secondary %}sky-800{% endif %} px-6 py-3 focus:outline-none"
+        class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} px-6 py-3 focus:outline-none"
         {{ attrs }}>
         {% endif %}
 
         <span
-            class="absolute inset-y-0 left-0 w-[2px] bg-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-400{% endif %}{% if secondary %}sky-800{% endif %} transition-all group-hover:w-full group-active:bg-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-400{% endif %}{% if secondary %}sky-800{% endif %}"></span>
+            class="absolute inset-y-0 left-0 w-[2px] bg-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} transition-all group-hover:w-full group-active:bg-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %}"></span>
 
         <span
-            class="relative text-sm font-medium text-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-400{% endif %}{% if secondary %}sky-800{% endif %} transition-colors group-hover:text-white">
+            class="relative text-sm font-medium text-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} transition-colors group-hover:text-white">
             {{ label }}
         </span>
         {% if url %}

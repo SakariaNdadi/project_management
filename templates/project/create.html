@@ -4,10 +4,80 @@
 {% block extra_css %}{% endblock extra_css %}
 {% block extra_js %}{% endblock extra_js %}
 {% block content %}
-<form class="p-5" method="post">
+<form method="post" class="p-5">
     {% csrf_token %}
-    {{ form }}
-    <button type="submit">Submit</button>
+    <div class="grid gap-4 mb-4 sm:grid-cols-2">
+        <div>
+            <c-input id="name" name="name" type="text" label="Name" placeholder="Project Name" required />
+        </div>
+        <div>
+            <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+            <select name="type" id="type" required=""
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                {% for value, label in project_types %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="sm:col-span-2">
+            <label for="description"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+            <textarea id="description" rows="4" name="description"
+                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50  border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                placeholder="Write product description here"></textarea>
+        </div>
+
+        <div>
+            <c-input id="start_date" name="start_date" type="datetime-local" label="Start Date" required />
+        </div>
+
+        <div>
+            <c-input id="end_date" name="end_date" type="datetime-local" label="End Date" required />
+        </div>
+        <div>
+            <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+            <select name="category" id="category" required
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                {% for value, label in categories %}
+                <option value="{{ value }}">
+                    {{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="is_active" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Is
+                Active</label>
+            <select name="is_active" id="is_active" required
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                <option value="true">True</option>
+                <option value="false">False</option>
+            </select>
+        </div>
+    </div>
+    <c-button label="Create Project" type="submit" primary />
 </form>
+
 {% endblock content %}
-{% block extra_scripts %}{% endblock extra_scripts %}
+{% block extra_scripts %}
+<script>
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+        // Prevent the form from submitting
+        event.preventDefault();
+
+        // Create a FormData object from the form
+        const formData = new FormData(event.target);
+
+        // Convert FormData to an object
+        const submittedValues = {};
+        formData.forEach((value, key) => {
+            submittedValues[key] = value;
+        });
+
+        // Log the captured values
+        console.log("Captured values:", submittedValues);
+
+        // Optional: Perform further actions (e.g., validation, AJAX submission)
+    });
+</script>
+{% endblock extra_scripts %}
