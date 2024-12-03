@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 User = get_user_model()
 
 
+# Choices
 class ProjectType(models.TextChoices):
     SCRUM = "SC", "Scrum"
     KANBAN = "KA", "Kanban"
@@ -67,16 +68,47 @@ class Roles(models.TextChoices):
     GUEST = "GUEST", "Guest"
     MEMBER = "MEMBER", "Member"
     REVIEWER = "REVIEWER", "Reviewer"
+    TESTER = "TESTER", "Tester"
+    SCRIBE = "SCRIBE", "Scribe"
 
 
-class Project(models.Model):
+# Abstract Models
+class TimeStampAndOwnerAbstract(models.Model):
+    created_by = models.ForeignKey(
+        User, null=True, on_delete=models.SET_NULL, related_name="%(class)s_created"
+    )
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
+class DurationAbstract(models.Model):
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    duration = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    def calculate_duration(self) -> int | None:
+        if self.start_date and self.end_date:
+            if self.end_date < self.start_date:
+                raise ValidationError("End date must be after start date.")
+            return (self.end_date - self.start_date).days
+        return None
+
+    class Meta:
+        abstract = True
+
+
+class Project(TimeStampAndOwnerAbstract, DurationAbstract):
     name = models.CharField(max_length=255, unique=True)
     type = models.CharField(max_length=3, choices=ProjectType.choices)
     description = models.TextField(
         blank=True, null=True, help_text="Project Description"
     )
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
     lead = models.ForeignKey(
         User,
         related_name="project_lead",
@@ -89,11 +121,6 @@ class Project(models.Model):
     )
     category = models.CharField(max_length=20, choices=Categories.choices)
     is_active = models.BooleanField(default=True)
-    created_by = models.ForeignKey(
-        User, related_name="created_project", null=True, on_delete=models.SET_NULL
-    )
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.name
@@ -101,11 +128,10 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse("project_detail", args=[self.pk])
 
-    # def save(self, *args, **kwargs) -> None:
-    #     self.clean()
-    #     self.lead = self.request.user
-    #     self.created_by = self.request.user
-    #     return super().save(*args, **kwargs)
+    def save(self, *args, **kwargs) -> None:
+        if self.start_date and self.end_date:
+            self.duration = self.calculate_duration()
+        super().save(*args, **kwargs)
 
 
 class ProjectMember(models.Model):
@@ -119,7 +145,7 @@ class ProjectMember(models.Model):
         unique_together = ("project", "user", "role")
 
 
-class Issue(models.Model):
+class Issue(TimeStampAndOwnerAbstract, DurationAbstract):
     class IssueType(models.TextChoices):
         BUG = "BUG", "Bug"
         TASK = "TASK", "Task"
@@ -228,10 +254,7 @@ class Issue(models.Model):
     effort_estimate = models.PositiveIntegerField(
         blank=True, null=True, help_text="Estimated effort in hours/days"
     )
-    completion_criteria = models.TextField(
-        blank=True, null=True, help_text="Criteria to consider the task complete"
-    )
-    task_dependencies = models.ForeignKey(
+    dependent_on = models.ForeignKey(
         "self",
         related_name="issue_dependencies",
         blank=True,
@@ -240,26 +263,27 @@ class Issue(models.Model):
         help_text="Dependencies on other tasks or issues",
     )
 
-    attachments = models.FileField(
-        upload_to="issue/attachments/",
-        null=True,
-        blank=True,
-        help_text="Files related to the issue",
-    )
-    created_by = models.ForeignKey(
-        User, related_name="issues_created", null=True, on_delete=models.SET_NULL
-    )
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self) -> str:
         return self.title
+
+    def save(self, *args, **kwargs) -> None:
+        if self.start_date and self.end_date:
+            self.duration = self.calculate_duration()
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering: list[str] = ["-created_at"]
 
 
-class Sprint(models.Model):
+class IssueAttachment(TimeStampAndOwnerAbstract):
+    issue = models.ForeignKey(
+        Issue, on_delete=models.CASCADE, related_name="attachments"
+    )
+    file = models.FileField(upload_to="issues/attachments/")
+    description = models.TextField(blank=True, null=True)
+
+
+class Sprint(TimeStampAndOwnerAbstract, DurationAbstract):
 
     class SprintStatuses(models.TextChoices):
         NOT_STARTED = "NOT_STARTED", "Not Started"
@@ -270,15 +294,7 @@ class Sprint(models.Model):
     project = models.ForeignKey(
         Project, related_name="sprints", on_delete=models.CASCADE
     )
-    created_by = models.ForeignKey(
-        User, related_name="sprints_created", null=True, on_delete=models.SET_NULL
-    )
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-
     name = models.CharField(max_length=255, help_text="Sprint name or title")
-    start_date = models.DateTimeField(help_text="The start date of the sprint")
-    end_date = models.DateTimeField(help_text="The end date of the sprint")
     goal = models.TextField(blank=True, null=True, help_text="Sprint goal or objective")
     status = models.CharField(
         max_length=20,
@@ -292,11 +308,6 @@ class Sprint(models.Model):
     completed_at = models.DateTimeField(
         blank=True, null=True, help_text="When the sprint was completed"
     )
-    duration = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        help_text="Duration in days of the sprint (calculated from start_date to end_date)",
-    )
     issues = models.ManyToManyField(
         "Issue",
         blank=True,
@@ -309,11 +320,11 @@ class Sprint(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         if self.start_date and self.end_date:
-            self.duration = (self.end_date - self.start_date).days
+            self.duration = self.calculate_duration()
         super().save(*args, **kwargs)
 
 
-class Epic(models.Model):
+class Epic(TimeStampAndOwnerAbstract, DurationAbstract):
     class EpicStatuses(models.TextChoices):
         TO_DO = "TO_DO", "To Do"
         IN_PROGRESS = "IN_PROGRESS", "In Progress"
@@ -324,9 +335,6 @@ class Epic(models.Model):
     title = models.CharField(max_length=255, help_text="Epic title or name")
     description = models.TextField(
         blank=True, null=True, help_text="Detailed description of the epic"
-    )
-    goal = models.TextField(
-        blank=True, null=True, help_text="Objective or goal for this epic"
     )
     status = models.CharField(
         max_length=20,
@@ -340,10 +348,6 @@ class Epic(models.Model):
         default=Priority.LOW,
         help_text="Priority of the epic",
     )
-    start_date = models.DateTimeField(
-        null=True, blank=True, help_text="Epic start date"
-    )
-    end_date = models.DateTimeField(null=True, blank=True, help_text="Epic end date")
     completed_at = models.DateTimeField(
         null=True, blank=True, help_text="Epic completion date"
     )
@@ -359,20 +363,20 @@ class Epic(models.Model):
     is_blocked = models.BooleanField(
         default=False, help_text="Whether the epic is currently blocked"
     )
-    created_by = models.ForeignKey(
-        User, related_name="epics_created", null=True, on_delete=models.SET_NULL
-    )
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.title
+
+    def save(self, *args, **kwargs) -> None:
+        if self.start_date and self.end_date:
+            self.duration = self.calculate_duration()
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering: list[str] = ["-created_at"]
 
 
-class UserStory(models.Model):
+class UserStory(TimeStampAndOwnerAbstract, DurationAbstract):
     title = models.CharField(
         max_length=255, help_text="The title or summary of the user story"
     )
@@ -413,30 +417,38 @@ class UserStory(models.Model):
         on_delete=models.SET_NULL,
         help_text="Sprint to which this user story is assigned",
     )
-    due_date = models.DateTimeField(
-        null=True, blank=True, help_text="Due date for completing the user story"
-    )
-    created_by = models.ForeignKey(
-        User, related_name="created_user_stories", null=True, on_delete=models.SET_NULL
-    )
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.title
+
+    def save(self, *args, **kwargs) -> None:
+        if self.start_date and self.end_date:
+            self.duration = self.calculate_duration()
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering: list[str] = ["-created_at"]
         verbose_name_plural = "User Stories"
 
 
-class AcceptanceCriteria(models.Model):
+class AcceptanceCriteria(TimeStampAndOwnerAbstract):
     class CriteriaType(models.TextChoices):
         BEHAVIOuR_DRIVEN = "BD", "Behaviour-Driven"
         DESCRIPTIVE = "DS", "Descriptive"
 
     user_story = models.ForeignKey(
-        "UserStory", on_delete=models.CASCADE, related_name="acceptance_criteria"
+        UserStory,
+        on_delete=models.CASCADE,
+        related_name="acceptance_criteria",
+        blank=True,
+        null=True,
+    )
+    issue = models.ForeignKey(
+        Issue,
+        on_delete=models.CASCADE,
+        related_name="acceptance_criteria",
+        blank=True,
+        null=True,
     )
     description = models.TextField(
         blank=True,
@@ -454,7 +466,7 @@ class AcceptanceCriteria(models.Model):
     then = models.TextField(
         blank=True, null=True, help_text="The expected outcome or result (Then)."
     )
-    criteria_type = models.CharField(
+    type = models.CharField(
         max_length=2,
         choices=CriteriaType.choices,
         default=CriteriaType.BEHAVIOuR_DRIVEN,
@@ -465,14 +477,6 @@ class AcceptanceCriteria(models.Model):
         help_text="Indicates whether the acceptance criteria has been met",
     )
     is_met_date = models.DateTimeField()
-    created_by = models.ForeignKey(
-        User,
-        related_name="created_acceptance_criteria",
-        null=True,
-        on_delete=models.SET_NULL,
-    )
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f"Acceptance Criteria for {self.user_story.title}"
@@ -480,6 +484,144 @@ class AcceptanceCriteria(models.Model):
     def save(self) -> None:
         if self.is_met:
             self.is_met_date = datetime.now()
+
+    class Meta:
+        ordering: list[str] = ["-created_at"]
+
+
+# *********************************************************************
+# TESTER
+# *********************************************************************
+
+
+class TestLevels(models.TextChoices):
+    COMPONENT = "COMPONENT", "Component"
+    COMPONENT_INTEGRATION = "COMPONENT_INTEGRATION", "Component Integration"
+    SYSTEM = "SYSTEM", "System"
+    SYSTEM_INTEGRATION = "SYSTEM_INTEGRATION", "System Integration"
+    ACCEPTANCE = "ACCEPTANCE", "Acceptance"
+
+
+class TestTypes(models.TextChoices):
+    FUNCTIONAL = "FUNCTIONAL", "Functional"
+    NON_FUNCTIONAL = "NON_FUNCTIONAL", "Non-Functional"
+    BLACK_BOX = "BLACK_BOX", "Black Box"
+    WHITE_BOX = "WHITE_BOX", "White Box"
+    CONFIRMATION = "CONFIRMATION", "Confirmation"
+    REGRESSION = "REGRESSION", "Regression"
+    MAINTENANCE = "MAINTENANCE", "Maintenance"
+
+
+class AcceptanceTestingTypes(models.TextChoices):
+    USER = "USER", "User"
+    OPERATIONAL = "OPERATIONAL", "Operational"
+    ALPHA = "ALPHA", "Alpha"
+    BETA = "BETA", "Beta"
+
+
+class TestCase(TimeStampAndOwnerAbstract):
+    title = models.CharField(max_length=255, help_text="Title of the test case")
+    description = models.TextField(
+        blank=True, null=True, help_text="Detailed description of the test case"
+    )
+    steps = models.TextField(
+        blank=True, null=True, help_text="Steps to execute the test case"
+    )
+    expected_result = models.TextField(
+        blank=True, null=True, help_text="Expected result after test execution"
+    )
+    issue = models.ForeignKey(
+        "Issue",
+        related_name="test_cases",
+        on_delete=models.CASCADE,
+        help_text="Issue associated with this test case",
+    )
+
+    def __str__(self) -> str:
+        return self.title
+
+    class Meta:
+        ordering: list[str] = ["-created_at"]
+
+
+class TestExecution(TimeStampAndOwnerAbstract):
+    class ExecutionType(models.TextChoices):
+        MANUAL = "MANUAL", "Manual"
+        AUTOMATED = "AUTOMATED", "Automated"
+
+    class ExecutionStatus(models.TextChoices):
+        PASSED = "PASSED", "Passed"
+        FAILED = "FAILED", "Failed"
+        BLOCKED = "BLOCKED", "Blocked"
+        NOT_EXECUTED = "NOT_EXECUTED", "Not Executed"
+
+    test_case = models.ForeignKey(
+        TestCase,
+        related_name="executions",
+        on_delete=models.CASCADE,
+        help_text="Test case being executed",
+    )
+    execution_type = models.CharField(
+        max_length=10,
+        choices=ExecutionType.choices,
+        default=ExecutionType.MANUAL,
+        help_text="Type of execution (manual or automated)",
+    )
+    status = models.CharField(
+        max_length=15,
+        choices=ExecutionStatus.choices,
+        default=ExecutionStatus.NOT_EXECUTED,
+        help_text="Result of the test execution",
+    )
+    executed_by = models.ForeignKey(
+        User,
+        related_name="test_executions",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="User who executed the test case",
+    )
+    execution_date = models.DateTimeField(
+        auto_now_add=True, help_text="When the test case was executed"
+    )
+    log = models.TextField(
+        blank=True, null=True, help_text="Detailed log of the test execution"
+    )
+    attachments = models.FileField(
+        upload_to="test_execution/attachments/",
+        null=True,
+        blank=True,
+        help_text="Evidence or logs of the execution",
+    )
+
+    def __str__(self) -> str:
+        return f"{self.test_case.title} - {self.execution_type}"
+
+    class Meta:
+        ordering: list[str] = ["-execution_date"]
+
+
+class TestPlan(TimeStampAndOwnerAbstract):
+    title = models.CharField(max_length=255, help_text="Title of the test plan")
+    description = models.TextField(
+        blank=True, null=True, help_text="Detailed description of the test plan"
+    )
+
+    # Test Approach
+    entry_criteria = models.TextField(
+        blank=True, null=True, help_text="Detailed description of the test plan"
+    )
+    exit_criteria = models.TextField(
+        blank=True, null=True, help_text="Detailed description of the test plan"
+    )
+    test_cases = models.ManyToManyField(
+        "TestCase",
+        related_name="test_plans",
+        help_text="Test cases included in this test plan",
+    )
+
+    def __str__(self) -> str:
+        return self.title
 
     class Meta:
         ordering: list[str] = ["-created_at"]
