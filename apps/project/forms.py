@@ -44,3 +44,8 @@ class AcceptanceCriteriaForm(forms.ModelForm):
     class Meta:
         model = AcceptanceCriteria
         fields = "__all__"
+
+
+class InvitationForm(forms.Form):
+    email = forms.EmailField()
+    role = forms.ChoiceField()

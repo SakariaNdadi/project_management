@@ -1,0 +1,13 @@
+<form method="post" class="grid grid-cols-4 gap-2 pb-2">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-span-2">
+        {{ form.email }}
+    </div>
+    <div>
+        {{ form.role }}
+    </div>
+    <span>
+        <button type="submit" class="btn btn-primary">Invite</button>
+    </span>
+</form>
