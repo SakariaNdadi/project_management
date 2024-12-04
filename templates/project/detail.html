@@ -1,4 +1,5 @@
 {% extends '_base.html' %}
+{% load static %}
 {% block title %}{{ project.name }}{% endblock title %}
 {% block head %}{% endblock head %}
 {% block extra_css %}{% endblock extra_css %}
@@ -226,6 +227,46 @@ disabled: true,
     </div>
 </section>
 {% endif %}
+
+
+<div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+    <dl class="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+            <dt class="order-last text-lg font-medium text-gray-500">Sprints</dt>
+
+            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.sprints.all|length }}</dd>
+        </div>
+
+        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+            <dt class="order-last text-lg font-medium text-gray-500">Epics</dt>
+
+            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.epics.all|length }}</dd>
+        </div>
+
+        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+            <dt class="order-last text-lg font-medium text-gray-500">User Stories</dt>
+
+            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.epics.user_stories.all|length }}
+            </dd>
+        </div>
+
+        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+            <dt class="order-last text-lg font-medium text-gray-500">Issues</dt>
+
+            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.issues|length }}</dd>
+        </div>
+
+        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+            <dt class="order-last text-lg font-medium text-gray-500">Members</dt>
+
+            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.members.all|length }}</dd>
+        </div>
+
+    </dl>
+</div>
+
+
 
 {% endblock content %}
 {% block extra_scripts %}

@@ -275,7 +275,7 @@ def project_epics_list(request, project_id) -> HttpResponse:
     )
     epics = Epic.objects.filter(project=project)
     context = {"epics": epics}
-    return render(request, "project/epic_list.html", context)
+    return render(request, "project/epic/list.html", context)
 
 
 def project_epics_detail(request, project_id, epic_id) -> HttpResponse:
@@ -285,7 +285,7 @@ def project_epics_detail(request, project_id, epic_id) -> HttpResponse:
     )
     epic = get_object_or_404(Epic, Q(project=project_id) & Q(pk=epic_id))
     context = {"epic": epic}
-    return render(request, "project/epic_detail.html", context)
+    return render(request, "project/epic/detail.html", context)
 
 
 def project_issues_list(request, project_id) -> HttpResponse:
@@ -295,7 +295,7 @@ def project_issues_list(request, project_id) -> HttpResponse:
     )
     issues = Issue.objects.filter(project=project)
     context = {"issues": issues}
-    return render(request, "project/issue_list.html", context)
+    return render(request, "project/issue/list.html", context)
 
 
 def project_member_invite(request, project_id):
