@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+{% block title %}EPICS{% endblock title %}
+{% block head %}{% endblock head %}
+{% block extra_css %}{% endblock extra_css %}
+{% block extra_js %}{% endblock extra_js %}
+{% block content %}
+<div class="overflow-hidden w-full overflow-x-auto">
+    {% if epic.project.lead == user %}
+    <div x-data="{disabled: true,}"></div>
+    {% endif %}
+</div>
+{% endblock content %}
+{% block extra_scripts %}{% endblock extra_scripts %}

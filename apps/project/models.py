@@ -354,15 +354,18 @@ class Epic(TimeStampAndOwnerAbstract, DurationAbstract):
         related_name="epics",
         help_text="Issues linked to this epic",
     )
-    is_active = models.BooleanField(
-        default=True, help_text="Whether the epic is still active or archived"
-    )
     is_blocked = models.BooleanField(
         default=False, help_text="Whether the epic is currently blocked"
     )
 
     def __str__(self) -> str:
         return self.title
+
+    def get_absolute_url(self):
+        return reverse(
+            "project_epics_detail",
+            kwargs={"project_id": self.project.pk, "epic_id": self.pk},
+        )
 
     def save(self, *args, **kwargs) -> None:
         if self.start_date and self.end_date:

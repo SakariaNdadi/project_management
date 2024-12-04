@@ -278,6 +278,16 @@ def project_epics_list(request, project_id) -> HttpResponse:
     return render(request, "project/epic_list.html", context)
 
 
+def project_epics_detail(request, project_id, epic_id) -> HttpResponse:
+    user = request.user
+    project = get_object_or_404(
+        Project, Q(pk=project_id) & (Q(lead=user) | Q(members=user))
+    )
+    epic = get_object_or_404(Epic, Q(project=project_id) & Q(pk=epic_id))
+    context = {"epic": epic}
+    return render(request, "project/epic_detail.html", context)
+
+
 def project_issues_list(request, project_id) -> HttpResponse:
     user = request.user
     project = get_object_or_404(

@@ -86,11 +86,14 @@ class EpicAdmin(admin.ModelAdmin):
         "priority",
         "start_date",
         "end_date",
-        "is_active",
         "created_at",
         "updated_at",
     )
-    list_filter = ("status", "priority", "project", "is_active")
+    list_filter = (
+        "status",
+        "priority",
+        "project",
+    )
     search_fields = ("title", "description")
     ordering = ("-created_at",)
 

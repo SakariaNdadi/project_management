@@ -19,11 +19,16 @@ urlpatterns: list = [
         name="project_epics_list",
     ),
     path(
+        "epics/<int:project_id>/detail/<int:epic_id>/",
+        views.project_epics_detail,
+        name="project_epics_detail",
+    ),
+    path(
         "issues/<int:project_id>/",
         views.project_issues_list,
         name="project_issues_list",
     ),
-    # emails
+    # project invitation
     path(
         "projects/<int:project_id>/invite/", views.invite_member, name="invite_member"
     ),
