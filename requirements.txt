@@ -5,6 +5,7 @@ django-compressor==4.5.1
 django-cotton==1.2.1
 django-cotton-components==0.1.5
 django-extensions==3.2.3
+django-simple-history==3.7.0
 rcssmin==1.1.2
 rjsmin==1.2.2
 sqlparse==0.5.2

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "compressor",
     "django_cotton",
     "django_cotton_components",
+    "simple_history",
     "apps.pages",
     "apps.project",
 ]
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",  # django-simple-history
 ]
 
 ROOT_URLCONF = "config.urls"
