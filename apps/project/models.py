@@ -184,9 +184,6 @@ class Issue(TimeStampAndOwnerAbstract, DurationAbstract):
         on_delete=models.SET_NULL,
         help_text="User assigned to this issue",
     )
-    due_date = models.DateTimeField(
-        null=True, blank=True, help_text="Due date for resolving the issue"
-    )
     sprint = models.ForeignKey(
         "Sprint",
         related_name="issue",
@@ -601,7 +598,7 @@ class TestExecution(TimeStampAndOwnerAbstract):
         ordering: list[str] = ["-execution_date"]
 
 
-class TestPlan(TimeStampAndOwnerAbstract):
+class TestPlan(TimeStampAndOwnerAbstract, DurationAbstract):
     title = models.CharField(max_length=255, help_text="Title of the test plan")
     description = models.TextField(
         blank=True, null=True, help_text="Detailed description of the test plan"

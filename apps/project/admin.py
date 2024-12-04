@@ -48,7 +48,7 @@ class IssueAdmin(admin.ModelAdmin):
         "status",
         "priority",
         "assignee",
-        "due_date",
+        "end_date",
         "created_at",
         "updated_at",
     )
@@ -103,7 +103,7 @@ class UserStoryAdmin(admin.ModelAdmin):
         "priority",
         "status",
         "sprint",
-        "due_date",
+        "end_date",
         "created_at",
         "updated_at",
     )
@@ -117,12 +117,12 @@ class UserStoryAdmin(admin.ModelAdmin):
 class AcceptanceCriteriaAdmin(admin.ModelAdmin):
     list_display = (
         "user_story",
-        "criteria_type",
+        "type",
         "is_met",
         "is_met_date",
         "created_at",
         "updated_at",
     )
-    list_filter = ("criteria_type", "is_met", "user_story")
+    list_filter = ("type", "is_met", "user_story")
     search_fields = ("user_story__title", "description")
     ordering = ("-created_at",)
