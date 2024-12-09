@@ -306,7 +306,7 @@ def project_issues_list(request, project_id) -> HttpResponse:
         Project, Q(pk=project_id) & (Q(lead=user) | Q(members=user))
     )
     issues = Issue.objects.filter(project=project)
-    context = {"issues": issues, "project": projects}
+    context = {"issues": issues, "project": project}
     return render(request, "project/issue/list.html", context)
 
 

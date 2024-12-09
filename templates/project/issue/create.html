@@ -11,10 +11,10 @@
     <c-input label="Title" required />
     <br>
     <div class="grid grid-cols-2 gap-5">
-        <c-select.choices label="Issue Status" :data="statuses" required />
-        <c-select.choices label="Issue Priority" :data="priorities" required />
-        <c-select.models label="Dependent On" :data="project.issue_dependencies.all" />
-        <c-select.models label="Assign To" :data="project.members.all" search />
+        <c-select label="Issue Status" :options="statuses" required />
+        <c-select label="Issue Priority" :options="priorities" required />
+        <c-select label="Dependent On" :model="project.issue_dependencies.all" />
+        <c-select label="Assign To" :model="project.members.all" search />
 
         <select name="type" id="type" x-model="selectedType" @focus="isOpen = true" @blur="isOpen = false"
             class="bg-white px-4 border border-gray-300 text-gray-900 text-sm focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
@@ -24,16 +24,6 @@
             <option value="FEATURE">Feature</option>
             <option value="IMPROVEMENT">Improvement</option>
         </select>
-
-        <c-select>
-            <c-slot name="options">
-                <option value="BUG">Bug</option>
-                <option value="TASK">Task</option>
-                <option value="FEATURE">Feature</option>
-                <option value="IMPROVEMENT">Improvement</option>
-            </c-slot>
-        </c-select>
-
 
     </div>
 
