@@ -28,6 +28,11 @@ urlpatterns: list = [
         views.project_issues_list,
         name="project_issues_list",
     ),
+    path(
+        "issues/<int:project_id>/create/",
+        views.issue_create,
+        name="issue_create",
+    ),
     # project invitation
     path(
         "projects/<int:project_id>/invite/", views.invite_member, name="invite_member"

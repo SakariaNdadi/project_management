@@ -65,11 +65,12 @@ class Status(models.TextChoices):
 
 
 class Roles(models.TextChoices):
-    GUEST = "GUEST", "Guest"
-    MEMBER = "MEMBER", "Member"
-    REVIEWER = "REVIEWER", "Reviewer"
+    PRODUCT_OWNER = "PRODUCT_OWNER", "Product Owner"
+    SCRUM_MASTER = "SCRUM_MASTER", "Scrum Master"
+    DEVELOPER = "DEVELOPER", "Developer"
     TESTER = "TESTER", "Tester"
     SCRIBE = "SCRIBE", "Scribe"
+    GUEST = "GUEST", "Guest"
 
 
 # Abstract Models
@@ -137,7 +138,9 @@ class Project(TimeStampAndOwnerAbstract, DurationAbstract):
 class ProjectMember(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.MEMBER)
+    role = models.CharField(
+        max_length=15, choices=Roles.choices, default=Roles.DEVELOPER
+    )
     is_active = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now=True)
 
@@ -184,14 +187,6 @@ class Issue(TimeStampAndOwnerAbstract, DurationAbstract):
         on_delete=models.SET_NULL,
         help_text="User assigned to this issue",
     )
-    sprint = models.ForeignKey(
-        "Sprint",
-        related_name="issue",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        help_text="Sprint to which the issue belongs",
-    )
     resolution = models.TextField(
         blank=True, null=True, help_text="Resolution details once the issue is resolved"
     )
@@ -215,14 +210,6 @@ class Issue(TimeStampAndOwnerAbstract, DurationAbstract):
     # Feature-specific fields
     requirements = models.TextField(
         blank=True, null=True, help_text="Business requirements for the feature"
-    )
-    user_story = models.ForeignKey(
-        "UserStory",
-        related_name="issues",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        help_text="User story describing the feature from a user's perspective",
     )
     business_value = models.TextField(
         blank=True, null=True, help_text="The value this feature brings to the business"
@@ -306,7 +293,7 @@ class Sprint(TimeStampAndOwnerAbstract, DurationAbstract):
         blank=True, null=True, help_text="When the sprint was completed"
     )
     issues = models.ManyToManyField(
-        "Issue",
+        Issue,
         blank=True,
         related_name="sprints",
         help_text="Issues assigned to this sprint",
@@ -356,6 +343,9 @@ class Epic(TimeStampAndOwnerAbstract, DurationAbstract):
     )
     is_blocked = models.BooleanField(
         default=False, help_text="Whether the epic is currently blocked"
+    )
+    is_published = models.BooleanField(
+        default=False, help_text="Whether the epic is currently published"
     )
 
     def __str__(self) -> str:
@@ -417,6 +407,13 @@ class UserStory(TimeStampAndOwnerAbstract, DurationAbstract):
         on_delete=models.SET_NULL,
         help_text="Sprint to which this user story is assigned",
     )
+    issues = models.ManyToManyField(Issue, related_name="user_stories")
+
+    product_owner = models.ForeignKey(
+        User, on_delete=models.PROTECT, blank=True, null=True
+    )
+    is_approved = models.BooleanField(default=False)
+    is_approved_datetime = models.DateTimeField(blank=True, null=True)
 
     def __str__(self) -> str:
         return self.title
@@ -424,6 +421,8 @@ class UserStory(TimeStampAndOwnerAbstract, DurationAbstract):
     def save(self, *args, **kwargs) -> None:
         if self.start_date and self.end_date:
             self.duration = self.calculate_duration()
+        if self.is_approved:
+            self.is_approved_datetime = datetime.now()
         super().save(*args, **kwargs)
 
     class Meta:

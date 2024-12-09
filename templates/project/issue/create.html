@@ -1,7 +1,76 @@
 {% extends '_base.html' %}
-{% block title %}{% endblock title %}
+{% block title %}Issue Create{% endblock title %}
 {% block head %}{% endblock head %}
 {% block extra_css %}{% endblock extra_css %}
 {% block extra_js %}{% endblock extra_js %}
-{% block content %}{% endblock content %}
+{% block content %}
+
+<form method="post" x-data="{
+    selectedType: '',isOpen: false
+}">
+    <c-input label="Title" required />
+    <br>
+    <div class="grid grid-cols-2 gap-5">
+        <c-select.choices label="Issue Status" :data="statuses" required />
+        <c-select.choices label="Issue Priority" :data="priorities" required />
+        <c-select.models label="Dependent On" :data="project.issue_dependencies.all" />
+        <c-select.models label="Assign To" :data="project.members.all" search />
+
+        <select name="type" id="type" x-model="selectedType" @focus="isOpen = true" @blur="isOpen = false"
+            class="bg-white px-4 border border-gray-300 text-gray-900 text-sm focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+            <option value="" x-show="!isOpen">-- Select an Option --</option>
+            <option value="BUG">Bug</option>
+            <option value="TASK">Task</option>
+            <option value="FEATURE">Feature</option>
+            <option value="IMPROVEMENT">Improvement</option>
+        </select>
+
+        <c-select>
+            <c-slot name="options">
+                <option value="BUG">Bug</option>
+                <option value="TASK">Task</option>
+                <option value="FEATURE">Feature</option>
+                <option value="IMPROVEMENT">Improvement</option>
+            </c-slot>
+        </c-select>
+
+
+    </div>
+
+    <br>
+
+
+    <!-- Conditional rendering -->
+    <template x-if="selectedType === 'BUG'">
+        <div>
+            <!-- Content specific to 'bug' -->
+            <label for="bug-details">Bug Details</label>
+        </div>
+    </template>
+    <template x-if="selectedType === 'TASK'">
+        <div>
+            <!-- Content specific to 'task' -->
+            <label for="task-details">Task Details</label>
+        </div>
+    </template>
+    <template x-if="selectedType === 'FEATURE'">
+        <div>
+            <!-- Content specific to 'task' -->
+            <label for="task-details">FEATURE Details</label>
+        </div>
+    </template>
+    <template x-if="selectedType === 'IMPROVEMENT'">
+        <div>
+            <!-- Content specific to 'task' -->
+            <label for="task-details">IMPROVEMENT Details</label>
+        </div>
+    </template>
+    <br>
+    <br>
+    {{ form }}
+
+    <c-button label="Create Issue" primary />
+</form>
+
+{% endblock content %}
 {% block extra_scripts %}{% endblock extra_scripts %}

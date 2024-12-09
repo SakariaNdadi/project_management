@@ -1,10 +1,10 @@
 <c-vars label />
 {% if url %}
-<a class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} px-6 py-3 focus:outline-none"
+<a class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} px-{% if px %}{{ px }}{% else %}6{% endif %} py-{% if py %}{{ py }}{% else %}3{% endif %} focus:outline-none"
     href="{{ url }}" {{ attrs }}>
     {% else %}
     <button
-        class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} px-6 py-3 focus:outline-none"
+        class="group relative inline-block overflow-hidden border border-{% if danger %}red-600{% endif %}{% if success %}green-500{% endif %}{% if primary %}neutral-500{% endif %}{% if secondary %}sky-800{% endif %} px-{% if px %}{{ px }}{% else %}6{% endif %} py-{% if py %}{{ py }}{% else %}3{% endif %} focus:outline-none"
         {{ attrs }}>
         {% endif %}
 

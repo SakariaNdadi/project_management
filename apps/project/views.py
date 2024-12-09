@@ -16,6 +16,8 @@ from .models import (
     ProjectType,
     Roles,
     ProjectMember,
+    Status,
+    Priority,
 )
 from .forms import (
     ProjectForm,
@@ -38,9 +40,6 @@ def project_list(request) -> HttpResponse:
     # projects = Project.objects.all()
     projects = Project.objects.filter(Q(lead=user) | Q(members=user)).distinct()
     return render(request, "project/list.html")
-
-
-import json
 
 
 def project_detail(request, pk) -> HttpResponse:
@@ -170,19 +169,32 @@ def project_delete(request, pk) -> HttpResponse:
 
 
 # Issue Views
-def issue_create(request, project_pk):
-    project = get_object_or_404(Project, pk=project_pk)
+def issue_create(request, project_id):
+    user = request.user
+    project = get_object_or_404(Project, pk=project_id)
+    types = Issue.IssueType.choices
+    statuses = Status.choices
+    priorities = Priority.choices
     if request.method == "POST":
         form = IssueForm(request.POST)
         if form.is_valid():
             issue = form.save(commit=False)
             issue.project = project
+            issue.created_by = user
             issue.save()
             return redirect("project_detail", pk=project.pk)
     else:
         form = IssueForm()
     return render(
-        request, "project/issues/create.html", {"form": form, "project": project}
+        request,
+        "project/issue/create.html",
+        {
+            "form": form,
+            "project": project,
+            "types": types,
+            "statuses": statuses,
+            "priorities": priorities,
+        },
     )
 
 
@@ -294,7 +306,7 @@ def project_issues_list(request, project_id) -> HttpResponse:
         Project, Q(pk=project_id) & (Q(lead=user) | Q(members=user))
     )
     issues = Issue.objects.filter(project=project)
-    context = {"issues": issues}
+    context = {"issues": issues, "project": projects}
     return render(request, "project/issue/list.html", context)
 
 

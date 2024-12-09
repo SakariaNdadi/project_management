@@ -4,12 +4,124 @@
 {% block extra_css %}{% endblock extra_css %}
 {% block extra_js %}{% endblock extra_js %}
 {% block content %}
-<div class="overflow-hidden w-full overflow-x-auto">
-    {% if epic.project.lead == user %}
-    <div x-data="{disabled: true,}">
+<div class="overflow-hidden w-full overflow-x-auto" x-data="{epicHover: false, storiesHover: false}">
 
+    <div class="grid grid-cols-4 gap-3">
+        <a href="#" @mouseover="epicHover = true" @mouseleave="epicHover = false"
+            :class="epicHover ? 'col-span-3' : storiesHover ? 'col-span-1' : 'col-span-2'"
+            class="block p-6 bg-white border border-gray-200 shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ epic }}</h5>
+            <p class="font-normal text-gray-700 dark:text-gray-400">{{ epic.description }}</p>
+        </a>
+        <a href="#" @mouseover="storiesHover = true" @mouseleave="storiesHover = false"
+            :class="storiesHover ? 'col-span-3' : epicHover ? 'col-span-1' : 'col-span-2'"
+            class="block p-6 bg-white border border-gray-200 shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+
+            <div class="grid grid-cols-2">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">User Stories</h5>
+
+                <span class="flex justify-end">
+                    <c-button.create />
+                </span>
+            </div>
+
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                Title
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Priority
+                            </th>
+                            <th scope="col" class="px-6 py-3 rounded-e-lg">
+                                Status
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for story in epic.user_stories.all %}
+                        <tr class="bg-white dark:bg-gray-800">
+                            <th scope="row"
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ story }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ story.priority }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ story.status }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-semibold text-gray-900 dark:text-white">
+                            <th scope="row" class="px-6 py-3 text-base">Total</th>
+                            <td class="px-6 py-3">3</td>
+                            <td class="px-6 py-3">21,000</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </a>
     </div>
-    {% endif %}
+
+    <br>
+    <div
+        class="block p-6 bg-white border border-gray-200 shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 w-full">
+
+        <div class="grid grid-cols-2">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Issues</h5>
+
+            <span class="flex justify-end">
+                <c-button.create />
+            </span>
+        </div>
+
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 rounded-s-lg">
+                            Title
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Priority
+                        </th>
+                        <th scope="col" class="px-6 py-3 rounded-e-lg">
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in epic.issues.all %}
+                    <tr class="bg-white dark:bg-gray-800">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ issue }}
+                        </th>
+                        <td class="px-6 py-4">
+                            {{ issue.priority }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ issue.status }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="font-semibold text-gray-900 dark:text-white">
+                        <th scope="row" class="px-6 py-3 text-base">Total</th>
+                        <td class="px-6 py-3">3</td>
+                        <td class="px-6 py-3">21,000</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
 </div>
 {% endblock content %}
 {% block extra_scripts %}{% endblock extra_scripts %}

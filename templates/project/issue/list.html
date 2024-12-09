@@ -5,6 +5,10 @@
 {% block extra_js %}{% endblock extra_js %}
 {% block content %}
 
+
+<c-button.create url="{% url 'issue_create' project.pk %}" />
+
+
 <div x-data="{ selectedTab: 'my_issues' }" class="w-full">
     <div @keydown.right.prevent="$focus.wrap().next()" @keydown.left.prevent="$focus.wrap().previous()"
         class="flex gap-2 overflow-x-auto border-b border-neutral-300 dark:border-neutral-700" role="tablist"
