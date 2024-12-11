@@ -49,10 +49,10 @@
                                 {{ story }}
                             </th>
                             <td class="px-6 py-4">
-                                {{ story.priority }}
+                                {{ story.get_priority_display }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ story.status }}
+                                {{ story.get_status_display }}
                             </td>
                         </tr>
                         {% endfor %}

@@ -31,10 +31,10 @@ class ProjectType(models.TextChoices):
 
 
 class Priority(models.TextChoices):
-    LOW = "low", "Low"
-    MEDIUM = "medium", "Medium"
-    HIGH = "high", "High"
-    CRITICAL = "critical", "Critical"
+    LOW = "LOW", "Low"
+    MEDIUM = "MEDIUM", "Medium"
+    HIGH = "HIGH", "High"
+    CRITICAL = "CRITICAL", "Critical"
 
 
 class Categories(models.TextChoices):
