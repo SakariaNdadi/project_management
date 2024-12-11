@@ -1,4 +1,4 @@
-{% load static %}
+{% load static breadcrumbs %}
 <nav class="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-300 bg-neutral-50 px-4 py-2 dark:border-neutral-700 dark:bg-neutral-900"
     aria-label="top navigation bar">
 
@@ -14,7 +14,7 @@
     </button>
 
     <!-- breadcrumbs  -->
-    <nav class="hidden md:inline-block text-sm font-medium text-neutral-600 dark:text-neutral-300"
+    <!-- <nav class="hidden md:inline-block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         aria-label="breadcrumb">
         <ol class="flex flex-wrap items-center gap-1">
             <li class="flex items-center gap-1">
@@ -28,8 +28,11 @@
             <li class="flex items-center gap-1 font-bold text-neutral-900 dark:text-white" aria-current="page">Marketing
             </li>
         </ol>
-    </nav>
+    </nav> -->
 
+    <div>
+        {% generate_breadcrumbs %}
+    </div>
 
     <!-- Profile Menu  -->
     <div x-data="{ userDropdownIsOpen: false }" class="relative" x-on:keydown.esc.window="userDropdownIsOpen = false">
