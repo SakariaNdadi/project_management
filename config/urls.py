@@ -24,4 +24,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("apps.pages.urls")),
     path("projects/", include("apps.project.urls")),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path("__reload__/", include("django_browser_reload.urls")),
+]
+
+# Serve static files
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Serve media files
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

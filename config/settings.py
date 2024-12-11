@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     "django_cotton",
     "django_cotton_components",
     "simple_history",
+    "django_browser_reload",
     "apps.pages",
     "apps.project",
+    "apps.project_settings",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",  # django-simple-history
+    "django_browser_reload.middleware.BrowserReloadMiddleware",  # django-browser-reload
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -71,6 +74,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.project.context_processors.user_projects",
+                "apps.project_settings.context_processors.global_variables",  # project_settings
             ],
         },
     },
@@ -112,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-uk"
 
 TIME_ZONE = "UTC"
 
@@ -124,6 +128,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [
@@ -141,3 +147,22 @@ STATICFILES_FINDERS = (
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # AUTH_USER_MODEL = "auth.User"
+
+
+# settings.py
+from apps.project_settings.utils import get_project_settings
+from django.core.exceptions import AppRegistryNotReady
+
+try:
+    project_settings = get_project_settings()
+    if project_settings:
+        EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+        EMAIL_HOST = project_settings.smtp_server
+        EMAIL_PORT = project_settings.smtp_port
+        EMAIL_HOST_USER = project_settings.smtp_username
+        EMAIL_HOST_PASSWORD = project_settings.smtp_password
+        EMAIL_USE_TLS = project_settings.smtp_use_tls
+        EMAIL_USE_SSL = project_settings.smtp_use_ssl
+except AppRegistryNotReady:
+    # Log the error or handle it gracefully
+    pass
