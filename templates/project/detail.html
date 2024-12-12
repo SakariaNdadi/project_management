@@ -6,120 +6,146 @@
 {% block extra_js %}{% endblock extra_js %}
 {% block content %}
 
-{% if project.lead == user %}
-<div x-data="{
-disabled: true,
-}">
-    <section class="bg-white dark:bg-gray-900" @dblclick="disabled = !disabled">
-        <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-            <form method="post">
-                {% csrf_token %}
-                <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-                    <div class="sm:col-span-2">
-                        <label for="lead"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
-                        <input type="text" name="name" id="name" value="{{ project }}" :readonly="disabled"
-                            :class="{'border-8':!disabled}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+
+<div x-data="{ selectedTab: 'info' }" class="w-full">
+    <div @keydown.right.prevent="$focus.wrap().next()" @keydown.left.prevent="$focus.wrap().previous()"
+        class="flex gap-2 overflow-x-auto border-b border-neutral-300 dark:border-neutral-700" role="tablist"
+        aria-label="tab options">
+
+
+        <button @click="selectedTab = 'info'" :aria-selected="selectedTab === 'info'"
+            :tabindex="selectedTab === 'info' ? '0' : '-1'"
+            :class="selectedTab === 'info' ? 'font-bold text-black border-b-2 border-black dark:border-white dark:text-white' : 'text-neutral-600 font-medium dark:text-neutral-300 dark:hover:border-b-neutral-300 dark:hover:text-white hover:border-b-2 hover:border-b-neutral-800 hover:text-neutral-900'"
+            class="flex h-min items-center gap-2 px-4 py-2 text-sm" type="button" role="tab"
+            aria-controls="tabpanelGroups">
+            <svg class="size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                    d="M20 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6h-2m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4" />
+            </svg>
+
+            Info
+        </button>
+
+
+        <button @click="selectedTab = 'details'" :aria-selected="selectedTab === 'details'"
+            :tabindex="selectedTab === 'details' ? '0' : '-1'"
+            :class="selectedTab === 'details' ? 'font-bold text-black border-b-2 border-black dark:border-white dark:text-white' : 'text-neutral-600 font-medium dark:text-neutral-300 dark:hover:border-b-neutral-300 dark:hover:text-white hover:border-b-2 hover:border-b-neutral-800 hover:text-neutral-900'"
+            class="flex h-min items-center gap-2 px-4 py-2 text-sm" type="button" role="tab"
+            aria-controls="tabpanelLikes">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                class="size-4">
+                <path
+                    d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 0 1-.69.001l-.002-.001Z" />
+            </svg>
+            Details
+        </button>
+
+        {% if project.lead == user %}
+        <button @click="selectedTab = 'danger'" :aria-selected="selectedTab === 'danger'"
+            :tabindex="selectedTab === 'danger' ? '0' : '-1'"
+            :class="selectedTab === 'danger' ? 'font-bold text-red-600 border-b-2 border-red-600 dark:border-red-500 dark:text-red-500' : 'text-neutral-600 font-medium dark:text-neutral-300 dark:hover:border-b-neutral-300 dark:hover:text-red-500 hover:border-b-2 hover:border-b-neutral-800 hover:text-neutral-900'"
+            class="flex h-min items-center gap-2 px-4 py-2 text-sm text-red-500" type="button" role="tab"
+            aria-controls="tabpanelDanger">
+            <svg class="size-4 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Danger
+        </button>
+        {% endif %}
+    </div>
+
+
+    <div class="px-2 py-4 text-neutral-600 dark:text-neutral-300">
+        <!-- Info -->
+        <div x-show="selectedTab === 'info'" id="tabpanelGroups" role="tabpanel" aria-label="info" class="select-none">
+            {% if project.lead == user %}
+            <div x-data="{disabled: true,}">
+                <template x-if="disabled === false">
+                    <div class="relative w-full overflow-hidden rounded-md border border-sky-500 bg-white text-neutral-600 dark:bg-neutral-950 dark:text-neutral-300"
+                        role="alert">
+                        <div class="flex w-full items-center gap-2 bg-sky-500/10 p-4">
+                            <div class="bg-sky-500/15 text-sky-500 rounded-full p-1" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-6" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-2">
+                                <h3 class="text-sm font-semibold text-sky-500">Update Mode</h3>
+                                <p class="text-xs font-medium sm:text-sm">A new version is available. Please update to
+                                    the
+                                    latest version.</p>
+                            </div>
+                        </div>
                     </div>
+                </template>
+                <section class="bg-white dark:bg-gray-900" @dblclick="disabled = !disabled">
+                    <div class="py-8 px-4 mx-auto max-w-2xl">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                                <div class="sm:col-span-2">
+                                    <label for="lead"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
+                                    <input type="text" name="name" id="name" value="{{ project }}" :readonly="disabled"
+                                        :class="{'bg-white': !disabled, 'bg-gray-50': disabled}"
+                                        class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                </div>
 
-                    <div class="sm:col-span-2">
-                        <label for="description"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                        <textarea id="description" name="description" rows="8" :readonly="disabled"
-                            :class="{'border-8':!disabled}"
-                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                            value="{{ project.description }}">{{ project.description }}</textarea>
-                    </div>
-                    <div class="w-full">
-                        <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project
-                            Lead</label>
-                        <input type="text" name="lead" id="lead" value="{{ project.lead }}" :readonly="disabled"
-                            :class="{'border-8':!disabled}"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                            placeholder="{{ project.lead }}">
-                    </div>
+                                <div class="sm:col-span-2">
+                                    <label for="description"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                                    <textarea id="description" name="description" rows="8" :readonly="disabled"
+                                        :class="{'bg-white': !disabled, 'bg-gray-50': disabled}"
+                                        class="block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                                        value="{{ project.description }}">{{ project.description }}</textarea>
+                                </div>
 
-                    <div class="w-full">
-                        <label for="type"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+                                <div class="w-full">
+                                    <label for="start_date"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+                                        Date</label>
 
-                        <template x-if="disabled">
-                            <input type="text" id="type" value="{{ project.get_type_display }}" :readonly="disabled"
-                                :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                                placeholder="{{ project.get_type_display }}">
-                        </template>
+                                    <template x-if="disabled">
+                                        <input type="text" id="start_date" value="{{ project.start_date }}"
+                                            :readonly="disabled"
+                                            :class="{'bg-white': !disabled, 'bg-gray-50': disabled}"
+                                            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                    </template>
 
-                        <template x-if="disabled == false">
-                            <select name="type" id="type" :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                                {% for value, label in project_types %}
-                                <option value="{{ value }}" {% if value == project.type %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </template>
-                    </div>
+                                    <template x-if="disabled == false">
+                                        <input type="datetime-local" name="start_date" id="start_date"
+                                            value="{{ project.start_date|date:'Y-m-d\TH:i' }}"
+                                            :class="{'bg-white': !disabled, 'bg-gray-50': disabled}"
+                                            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                    </template>
+                                </div>
 
-                    <div class="w-full">
-                        <label for="start_date"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
-                            Date</label>
+                                <div class="w-full">
+                                    <label for="end_date"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+                                        Date</label>
 
-                        <template x-if="disabled">
-                            <input type="text" id="start_date" value="{{ project.start_date }}" :readonly="disabled"
-                                :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                        </template>
+                                    <template x-if="disabled">
+                                        <input type="text" id="end_date" value="{{ project.end_date }}"
+                                            :readonly="disabled"
+                                            :class="{'bg-white': !disabled, 'bg-gray-50': disabled}"
+                                            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                    </template>
 
-                        <template x-if="disabled == false">
-                            <input type="datetime-local" name="start_date" id="start_date"
-                                value="{{ project.start_date|date:'Y-m-d\TH:i' }}" :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                        </template>
-                    </div>
-
-                    <div class="w-full">
-                        <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
-                            Date</label>
-
-                        <template x-if="disabled">
-                            <input type="text" id="end_date" value="{{ project.end_date }}" :readonly="disabled"
-                                :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                        </template>
-
-                        <template x-if="disabled == false">
-                            <input type="datetime-local" name="end_date" id="end_date"
-                                value="{{ project.end_date|date:'Y-m-d\TH:i' }}" :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                        </template>
-                    </div>
-
-                    <div>
-                        <label for="category"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-
-                        <template x-if="disabled">
-                            <input type="text" id="category" value="{{ project.get_category_display }}"
-                                :readonly="disabled" :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                        </template>
-
-                        <template x-if="disabled == false">
-                            <select name="category" id="category" :class="{'border-8':!disabled}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                                {% for value, label in categories %}
-                                <option value="{{ value }}" {% if value == project.category %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </template>
-                    </div>
+                                    <template x-if="disabled == false">
+                                        <input type="datetime-local" name="end_date" id="end_date"
+                                            value="{{ project.end_date|date:'Y-m-d\TH:i' }}"
+                                            :class="{'bg-white': !disabled, 'bg-gray-50': disabled}"
+                                            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                                    </template>
+                                </div>
 
 
-                    {#
+                                {#
                     <div>
                         <template x-if="disabled">
                             <label for="is_active"
@@ -127,7 +153,7 @@ disabled: true,
                                 Active</label>
 
                             <input type="text" id="is_active" value="{{ project.is_active }}" :readonly="disabled"
-                                :class="{'border-8':!disabled}"
+                                :class="{'bg-white':!disabled}"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
                         </template>
 
@@ -146,125 +172,182 @@ disabled: true,
                         
                     </div>
                     #}
+                            </div>
+                            <br>
+                            <template x-if="disabled == false" class="mt-4 sm:mt-6">
+                                <c-button label="Update Project" type="submit" primary />
+                            </template>
+                        </form>
+                    </div>
+                </section>
+            </div>
+            {% else %}
+            <section class="bg-white dark:bg-gray-900">
+                <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+                    <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                        <div class="sm:col-span-2">
+                            <label for="lead"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
+                            <input type="text" name="name" id="name" value="{{ project }}" disabled
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                                placeholder="{{ project }}">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="description"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                            <textarea id="description" rows="8" disabled
+                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                                placeholder="{{ project.description }}">{{ project.description }}</textarea>
+                        </div>
+
+                        <div class="w-full">
+                            <label for="lead"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project
+                                Lead</label>
+                            <input type="text" name="lead" id="lead" value="{{ project.lead }}" disabled
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                                placeholder="{{ project.lead }}">
+                        </div>
+
+                        <div class="w-full">
+                            <label for="start_date"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+                                Date</label>
+
+                            <input type="text" id="start_date" value="{{ project.start_date }}" disabled
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+
+                        </div>
+
+                        <div class="w-full">
+                            <label for="end_date"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+                                Date</label>
+
+                            <input type="text" id="end_date" value="{{ project.end_date }}" disabled
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+
+                        </div>
+
+                        <div>
+                            <label for="item-weight"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item
+                                Weight (kg)</label>
+                            <input type="text" name="item-weight" id="item-weight" disabled
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                                placeholder="12">
+                        </div>
+                    </div>
                 </div>
-                <br>
-                <template x-if="disabled == false" class="mt-4 sm:mt-6">
-                    <c-button label="Update Project" type="submit" primary />
-                </template>
-            </form>
+            </section>
+            {% endif %}
         </div>
-    </section>
-</div>
-{% else %}
-<section class="bg-white dark:bg-gray-900">
-    <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-        <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-            <div class="sm:col-span-2">
-                <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project</label>
-                <input type="text" name="name" id="name" value="{{ project }}" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                    placeholder="{{ project }}">
-            </div>
+        <!-- Info End -->
 
-            <div class="sm:col-span-2">
-                <label for="description"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                <textarea id="description" rows="8" disabled
-                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                    placeholder="{{ project.description }}">{{ project.description }}</textarea>
-            </div>
+        <!-- Details -->
+        <div x-show="selectedTab === 'details'" id="tabpanelLikes" role="tabpanel" aria-label="details">
+            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+                <dl class="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-5">
 
-            <div class="w-full">
-                <label for="lead" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project
-                    Lead</label>
-                <input type="text" name="lead" id="lead" value="{{ project.lead }}" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                    placeholder="{{ project.lead }}">
-            </div>
+                    <a href="" class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+                        <dt class="order-last text-lg font-medium text-gray-500">Sprints</dt>
 
-            <div class="w-full">
-                <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+                        <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">
+                            {{ project.sprints.all|length }}</dd>
+                    </a>
 
-                <input type="text" id="type" value="{{ project.get_type_display }}" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                    placeholder="{{ project.get_type_display }}">
-            </div>
+                    <a href="{% url 'project_epics_list' project.id %}" hx-boost="true"
+                        class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+                        <dt class="order-last text-lg font-medium text-gray-500">Epics</dt>
 
-            <div class="w-full">
-                <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
-                    Date</label>
+                        <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.epics.all|length }}
+                        </dd>
+                    </a>
 
-                <input type="text" id="start_date" value="{{ project.start_date }}" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                    <a href="" class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+                        <dt class="order-last text-lg font-medium text-gray-500">User Stories</dt>
 
-            </div>
+                        <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">
+                            {{ project.epics.user_stories.all|length }}
+                        </dd>
+                    </a>
 
-            <div class="w-full">
-                <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
-                    Date</label>
+                    <a href="" class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+                        <dt class="order-last text-lg font-medium text-gray-500">Issues</dt>
 
-                <input type="text" id="end_date" value="{{ project.end_date }}" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
+                        <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.issues|length }}
+                        </dd>
+                    </a>
 
-            </div>
+                    <a href="" class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
+                        <dt class="order-last text-lg font-medium text-gray-500">Members</dt>
 
-            <div>
-                <label for="category"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                        <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">
+                            {{ project.members.all|length }}</dd>
+                    </a>
 
-                <input type="text" id="category" value="{{ project.get_category_display }}" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-            </div>
-
-            <div>
-                <label for="item-weight" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item
-                    Weight (kg)</label>
-                <input type="text" name="item-weight" id="item-weight" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
-                    placeholder="12">
+                </dl>
             </div>
         </div>
+        <!-- Details End -->
+
+
+        <!-- Danger -->
+        <div x-show="selectedTab === 'danger'" id="tabpanelDanger" role="tabpanel" aria-label="danger">
+
+
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row"
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                Change Project Lead?
+                            </th>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <td class="px-6 py-4">
+                                    <c-select :model="users" name="lead" search />
+                                </td>
+                                <td></td>
+                                <td class="px-6 py-4">
+                                    <c-button label="Change" type="submit" danger />
+                                </td>
+                            </form>
+                        </tr>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row"
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                Delete Project?
+                            </th>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <td class="px-6 py-4">
+                                    Be aware that deleting this will subsequently delete all associated artifacts
+                                    associated with it
+                                </td>
+                                <td></td>
+                                <td class="px-6 py-4">
+                                    <c-button label="Delete" type="submit" danger />
+                                </td>
+                            </form>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <!-- Danger End -->
+
+        <div x-show="selectedTab === 'saved'" id="tabpanelSaved" role="tabpanel" aria-label="saved"><b><a href="#"
+                    class="underline">Saved</a></b> tab is selected</div>
     </div>
-</section>
-{% endif %}
-
-
-<div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
-    <dl class="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4">
-
-        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
-            <dt class="order-last text-lg font-medium text-gray-500">Sprints</dt>
-
-            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.sprints.all|length }}</dd>
-        </div>
-
-        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
-            <dt class="order-last text-lg font-medium text-gray-500">Epics</dt>
-
-            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.epics.all|length }}</dd>
-        </div>
-
-        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
-            <dt class="order-last text-lg font-medium text-gray-500">User Stories</dt>
-
-            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.epics.user_stories.all|length }}
-            </dd>
-        </div>
-
-        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
-            <dt class="order-last text-lg font-medium text-gray-500">Issues</dt>
-
-            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.issues|length }}</dd>
-        </div>
-
-        <div class="flex flex-col rounded-lg border border-gray-100 px-4 py-8 text-center">
-            <dt class="order-last text-lg font-medium text-gray-500">Members</dt>
-
-            <dd class="text-4xl font-extrabold text-neutral-600 md:text-5xl">{{ project.members.all|length }}</dd>
-        </div>
-
-    </dl>
 </div>
+
+
+
 
 
 

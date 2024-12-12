@@ -68,17 +68,16 @@ class ProjectUpdateView(UpdateView):
     # form_class = ProjectForm
     fields = (
         "name",
-        "type",
         "description",
         "start_date",
         "end_date",
         "lead",
         "members",
-        "category",
         "is_active",
     )
     template_name = "project/detail.html"
     success_url = reverse_lazy("project_list")
+    context_object_name = "project"
 
     # def get_success_url(self):
     #     return reverse_lazy("project_detail", kwargs={"pk": self.object.pk})
@@ -90,10 +89,10 @@ class ProjectUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         context.update(
             {
-                "categories": Categories.choices,
-                "project_types": ProjectType.choices,
+                "users": User.objects.all(),
             }
         )
         return context
