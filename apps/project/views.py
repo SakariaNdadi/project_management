@@ -12,8 +12,6 @@ from .models import (
     Epic,
     UserStory,
     AcceptanceCriteria,
-    Categories,
-    ProjectType,
     Roles,
     ProjectMember,
     Status,
@@ -120,14 +118,11 @@ def project_create(
 
 class ProjectCreateView(CreateView):
     model = Project
-    # form_class = ProjectForm
     fields = (
         "name",
-        "type",
         "description",
         "start_date",
         "end_date",
-        "category",
         "is_active",
     )
     template_name = "project/create.html"
@@ -137,8 +132,6 @@ class ProjectCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context.update(
             {
-                "categories": Categories.choices,
-                "project_types": ProjectType.choices,
                 "users": User.objects.all(),
             }
         )

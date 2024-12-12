@@ -10,21 +10,12 @@
         <div>
             <c-input id="name" name="name" type="text" label="Name" placeholder="Project Name" required />
         </div>
-        <div>
-            <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
-            <select name="type" id="type" required=""
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                {% for value, label in project_types %}
-                <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
 
         <div class="sm:col-span-2">
             <label for="description"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
             <textarea id="description" rows="4" name="description"
-                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50  border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
+                class="block p-2.5 w-full text-sm text-gray-900 border border-gray-300 focus:ring-neutral-500 focus:border-neutral-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500"
                 placeholder="Write product description here"></textarea>
         </div>
 
@@ -36,23 +27,8 @@
             <c-input id="end_date" name="end_date" type="datetime-local" label="End Date" required />
         </div>
         <div>
-            <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-            <select name="category" id="category" required
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                {% for value, label in categories %}
-                <option value="{{ value }}">
-                    {{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label for="is_active" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Is
-                Active</label>
-            <select name="is_active" id="is_active" required
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-neutral-600 focus:border-neutral-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-neutral-500 dark:focus:border-neutral-500">
-                <option value="true">True</option>
-                <option value="false">False</option>
-            </select>
+            <c-select name="is_active" id="is_active" label="Is the project active" required
+                :options="[('yes','Yes'),('no','No')]" />
         </div>
     </div>
     <c-button label="Create Project" type="submit" primary />

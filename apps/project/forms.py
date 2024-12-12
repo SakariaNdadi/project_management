@@ -7,11 +7,9 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = (
             "name",
-            "type",
             "description",
             "start_date",
             "end_date",
-            "category",
             "is_active",
         )
 

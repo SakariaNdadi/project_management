@@ -9,25 +9,6 @@ User = get_user_model()
 
 
 # Choices
-class ProjectType(models.TextChoices):
-    SCRUM = "SC", "Scrum"
-    KANBAN = "KA", "Kanban"
-    WATERFALL = "WF", "Waterfall"
-    AGILE = "AG", "Agile"
-    LEAN = "LE", "Lean"
-    SIX_SIGMA = "SS", "Six Sigma"
-    PRINCE2 = "P2", "PRINCE2"
-    HYBRID = "HY", "Hybrid"
-    CPM = "CP", "Critical Path Method"
-    CCPM = "CC", "Critical Chain Project Management"
-    XP = "XP", "Extreme Programming"
-    APF = "AP", "Adaptive Project Framework"
-    PMBOK = "PM", "PMBOK (Project Management Body of Knowledge)"
-    EVENT_CHAIN = "EC", "Event Chain Methodology"
-    FDD = "FD", "Feature-Driven Development"
-    RAD = "RA", "Rapid Application Development"
-    IPD = "IP", "Integrated Project Delivery"
-    DESIGN_THINKING = "DT", "Design Thinking"
 
 
 class Priority(models.TextChoices):
@@ -35,25 +16,6 @@ class Priority(models.TextChoices):
     MEDIUM = "MEDIUM", "Medium"
     HIGH = "HIGH", "High"
     CRITICAL = "CRITICAL", "Critical"
-
-
-class Categories(models.TextChoices):
-    SOFTWARE = "Software", "Software Development"
-    MARKETING = "Marketing", "Marketing Campaigns"
-    FINANCE = "Finance", "Financial Planning"
-    OPERATIONS = "Operations", "Operations Management"
-    HR = "HR", "Human Resources"
-    SALES = "Sales", "Sales and CRM"
-    IT = "IT", "IT Infrastructure"
-    RESEARCH = "Research", "Research and Development"
-    DESIGN = "Design", "Product or Graphic Design"
-    EDUCATION = "Education", "Educational Projects"
-    HEALTHCARE = "Healthcare", "Healthcare Services"
-    CUSTOMER_SERVICE = "Customer Service", "Customer Support"
-    LEGAL = "Legal", "Legal Projects"
-    EVENTS = "Events", "Event Planning"
-    CONSTRUCTION = "Construction", "Construction Projects"
-    NON_PROFIT = "Non-Profit", "Non-Profit Initiatives"
 
 
 class Status(models.TextChoices):
@@ -106,7 +68,6 @@ class DurationAbstract(models.Model):
 
 class Project(TimeStampAndOwnerAbstract, DurationAbstract):
     name = models.CharField(max_length=255, unique=True)
-    type = models.CharField(max_length=3, choices=ProjectType.choices)
     description = models.TextField(
         blank=True, null=True, help_text="Project Description"
     )
@@ -120,7 +81,6 @@ class Project(TimeStampAndOwnerAbstract, DurationAbstract):
     members = models.ManyToManyField(
         User, related_name="project_member", through="ProjectMember"
     )
-    category = models.CharField(max_length=20, choices=Categories.choices)
     is_active = models.BooleanField(default=True)
 
     def __str__(self) -> str:

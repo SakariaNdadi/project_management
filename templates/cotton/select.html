@@ -53,7 +53,7 @@
                     options = allOptions" class="flex w-full flex-col" x-on:keydown="handleKeydownOnOptions($event)"
     x-on:keydown.esc.window="isOpen = false, openedWithKeyboard = false" x-init="options = allOptions">
 
-    <label for="{{ id }}" class="format dark:format-invert tracking-tight text-neutral-900">
+    <label for="{{ id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white {{ labelClass }}">
         {{ label }}{% if required %}<span style="color:red">*</span>{% endif %}
     </label>
     <div class="relative flex">
