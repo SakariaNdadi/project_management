@@ -42,8 +42,6 @@ def project_list(request) -> HttpResponse:
 
 def project_detail(request, pk) -> HttpResponse:
     user = request.user
-    categories = Categories.choices
-    project_types = ProjectType.choices
     project = get_object_or_404(Project, Q(pk=pk) & (Q(lead=user) | Q(members=user)))
 
     if request.method == "POST":
@@ -61,8 +59,6 @@ def project_detail(request, pk) -> HttpResponse:
         {
             "form": form,
             "project": project,
-            "categories": categories,
-            "project_types": project_types,
         },
     )
 

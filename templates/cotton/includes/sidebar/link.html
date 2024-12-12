@@ -1,5 +1,10 @@
-<a href="{{ url }}"
-    class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium text-neutral-600 underline-offset-2 hover:bg-black/5 hover:text-neutral-900 focus-visible:underline focus:outline-none dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white">
+<a href="{{ url }}" {{ attrs }} class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium text-neutral-600 underline-offset-2 hover:bg-black/5 hover:text-neutral-900 focus-visible:underline focus:outline-none dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white
+    {% if request.path == url %}
+            bg-black/5 text-neutral-900 dark:bg-white/5 dark:text-white pointer-events-none
+        {% else %}
+            text-neutral-600 hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white
+        {% endif %}
+    ">
     {{ icon }}
     <span>{{ name }}</span>
     {{ inline }}

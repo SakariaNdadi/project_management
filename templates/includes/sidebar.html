@@ -3,7 +3,7 @@
     class="fixed left-0 z-30 flex h-svh w-60 shrink-0 flex-col border-r border-neutral-300 bg-neutral-50 p-4 transition-transform duration-300 md:w-64 md:translate-x-0 md:relative dark:border-neutral-700 dark:bg-neutral-900"
     x-bind:class="sidebarIsOpen ? 'translate-x-0' : '-translate-x-60'" aria-label="sidebar navigation">
     <!-- logo  -->
-    <a href="#" class="ml-2 w-fit text-2xl font-bold text-neutral-900 dark:text-white">
+    <a href="{% url 'home' %}" hx-boost="true" class="ml-2 w-fit text-2xl font-bold text-neutral-900 dark:text-white">
         <span class="sr-only">homepage</span>
         <div viewBox="0 0 376 155" fill="none" aria-hidden="true">
             <h1 class="fill-neutral-900 dark:fill-white">{{ project_name }}</h1>
@@ -26,7 +26,7 @@
     <!-- sidebar links  -->
     <div class="flex flex-col gap-2 overflow-y-auto pb-6">
 
-        <c-includes.sidebar.link name="Dashboard" url="{% url 'home' %}">
+        <c-includes.sidebar.link name="Dashboard" hx-boost="true" url="{% url 'home' %}">
             <c-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
                     aria-hidden="true">
@@ -36,7 +36,7 @@
             </c-slot>
         </c-includes.sidebar.link>
 
-        <c-includes.sidebar.link name="Projects" url="{% url 'project_list' %}">
+        <c-includes.sidebar.link name="Projects" hx-boost="true" url="{% url 'project_list' %}">
             <c-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
                     aria-hidden="true">
@@ -54,7 +54,7 @@
 
 
 
-        <c-includes.sidebar.link name="Settings" url="#">
+        <c-includes.sidebar.link name="Settings" hx-boost="true" url="#">
             <c-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0"
                     aria-hidden="true">
@@ -73,7 +73,7 @@
             </div>
 
             <span class="relative z-10 bg-white px-6">Projects</span>
-            <span><a href="{% url 'project_create' %}">+</a></span>
+            <span><a href="{% url 'project_create' %}" hx-boost="true">+</a></span>
         </span>
 
 
@@ -95,17 +95,18 @@
 
 
 
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-General" url="{{ project.get_absolute_url }}"
-                name="General" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Members"
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-General" hx-boost="true"
+                url="{{ project.get_absolute_url }}" name="General" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Members" hx-boost="true"
                 url="{% url 'project_members_list' project.pk %}" name="Members" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Epics"
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Epics" hx-boost="true"
                 url="{% url 'project_epics_list' project.pk %}" name="Epics" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Stories" url="" name="User Stories" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Issues"
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Stories" hx-boost="true" url=""
+                name="User Stories" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Issues" hx-boost="true"
                 url="{% url 'project_issues_list' project.pk %}" name="Issues" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Sprints" url="" name="Sprints" />
-            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Reviews" url="" name="Reviews" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Sprints" hx-boost="true" url="" name="Sprints" />
+            <c-includes.sidebar.dropdown.link id="{{ project.pk }}-Reviews" hx-boost="true" url="" name="Reviews" />
 
 
         </c-includes.sidebar.dropdown>
